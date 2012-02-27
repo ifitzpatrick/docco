@@ -162,6 +162,8 @@ languages =
     name: 'ruby', symbol: '#'
   '.py':
     name: 'python', symbol: '#'
+  '.php':
+    name: 'php', symbol: '//'
   '.tex':
     name: 'tex', symbol: '%'
   '.latex':
