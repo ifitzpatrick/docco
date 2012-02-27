@@ -2,6 +2,8 @@ http  = require 'http'
 docco = require './docco'
 fs    = require 'fs'
 
+dir_template = docco.template fs.readFileSync('docco/resources/dir.jst', "utf8")
+
 http.createServer((req, res) ->
   base_url = req.url
   url      = '.' + base_url
@@ -33,8 +35,13 @@ http.createServer((req, res) ->
         didError()
       else
         if stat.isDirectory()
-          res.writeHead 200
-          res.end "#{url} is a directory"
+          fs.readdir url, (err, filenames) ->
+            if err
+              didError()
+            else
+              res.writeHead 200
+              res.end dir_template filenames: filenames, url: base_url
+
         else if stat.isFile()
           docco.generate_documentation url, (html) ->
             res.writeHead 200

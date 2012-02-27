@@ -1,0 +1,21 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <title>Docco</title>
+    <meta charset="utf-8" />
+  </head>
+
+  <body>
+    <ul>
+    <% for (var i = 0, length = filenames.length; i < length; i++) { %>
+      <% var filename=filenames[i]; %>
+      <li><a class="url filename" href="<%= (url + '/' +  filename).replace('//', '/') %>">
+        <%= filename %>
+      </a></li>
+      <% } %>
+    </ul>
+  </body>
+
+</html>

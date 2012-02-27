@@ -217,6 +217,8 @@ template = (str) ->
        .split('%>').join("p.push('") +
        "');}return p.join('');"
 
+exports.template = template
+
 # Create the template that we will use to generate the Docco HTML page.
 docco_template  = template fs.readFileSync(__dirname + '/../resources/docco.jst').toString()
 
