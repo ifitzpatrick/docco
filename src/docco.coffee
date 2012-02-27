@@ -60,9 +60,9 @@ generate_documentation = (source, callback) ->
     throw error if error
     sections = parse source, code
     highlight source, sections, ->
-      generate_html source, sections
-      callback()
+      callback(generate_html source, sections)
 
+exports.generate_documentation = generate_documentation
 # Given a string of source code, parse out each comment and the code that
 # follows it, and create an individual **section** for it.
 # Sections take the form:
@@ -133,13 +133,13 @@ highlight = (source, sections, callback) ->
 # and write out the documentation. Pass the completed sections into the template
 # found in `resources/docco.jst`
 generate_html = (source, sections) ->
+  sources ?= []
   title = path.basename source
-  dest  = destination source
+  #dest  = destination source
   html  = docco_template {
     title: title, sections: sections, sources: sources, path: path, destination: destination
   }
-  console.log "docco: #{source} -> #{dest}"
-  fs.writeFile dest, html
+  return html
 
 #### Helpers & Setup
 
@@ -231,11 +231,11 @@ highlight_end   = '</pre></div>'
 
 # Run the script.
 # For each source file passed in as an argument, generate the documentation.
-sources = process.ARGV.sort()
-if sources.length
-  ensure_directory 'docs', ->
-    fs.writeFile 'docs/docco.css', docco_styles
-    files = sources.slice(0)
-    next_file = -> generate_documentation files.shift(), next_file if files.length
-    next_file()
-
+#sources = process.ARGV.sort()
+#if sources.length
+#  ensure_directory 'docs', ->
+#    fs.writeFile 'docs/docco.css', docco_styles
+#    files = sources.slice(0)
+#    next_file = -> generate_documentation files.shift(), next_file if files.length
+#    next_file()
+#
