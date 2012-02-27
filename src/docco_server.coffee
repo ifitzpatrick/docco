@@ -16,6 +16,7 @@ http.createServer((req, res) ->
     res.writeHead 200
     res.end()
     return
+
   if base_url.indexOf('docco.css') >= 0
     fs.readFile 'docco/resources/docco.css', (err, data) ->
       if err
@@ -49,5 +50,5 @@ http.createServer((req, res) ->
 
 ).listen 3000
 
-console.log 'Listening on port 3000...'
+console.log 'Serving documentation at port 3000...'
 
