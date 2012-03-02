@@ -55,12 +55,18 @@
 # Generate the documentation for a source file by reading it in, splitting it
 # up into comment/code sections, highlighting them for the appropriate language,
 # and merging them into an HTML template.
+#
+# Callback parameter receives an error object or null for the first argument,
+# and the html as the second argument
 generate_documentation = (source, callback) ->
   fs.readFile source, "utf-8", (error, code) ->
-    throw error if error
-    sections = parse source, code
-    highlight source, sections, ->
-      callback(generate_html source, sections)
+    return callback(error) if error?
+    try
+      sections = parse source, code
+      highlight source, sections, ->
+        callback(null, generate_html source, sections)
+    catch error2
+      callback error2.message
 
 exports.generate_documentation = generate_documentation
 # Given a string of source code, parse out each comment and the code that

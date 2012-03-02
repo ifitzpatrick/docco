@@ -7,9 +7,9 @@ dir_template = docco.template fs.readFileSync('docco/resources/dir.jst', "utf8")
 http.createServer((req, res) ->
   base_url = req.url
   url      = '.' + base_url
-  didError = ->
-    message = 'an error has occured retrieving file data'
-    console.log message
+  didError = (message, console_message) ->
+    message = message or 'an error has occured retrieving file data'
+    console.error "Error: #{console_message or message}"
     res.writeHead 400
     res.end message
 
@@ -44,9 +44,12 @@ http.createServer((req, res) ->
               res.end dir_template filenames: filenames, url: base_url
 
         else if stat.isFile()
-          docco.generate_documentation url, (html) ->
-            res.writeHead 200
-            res.end html
+          docco.generate_documentation url, (err, html) ->
+            if err then didError 'Cannot display documentation for files with this file extension',
+              err
+            else
+              res.writeHead 200
+              res.end html
 
 ).listen 3000
 
