@@ -63,8 +63,11 @@ generate_documentation = (source, callback) ->
     return callback(error) if error?
     try
       sections = parse source, code
-      highlight source, sections, ->
-        callback(null, generate_html source, sections)
+      if (section for section in sections when section.code_text.length > 0).length > 0
+        highlight source, sections, ->
+          callback(null, generate_html source, sections)
+      else
+        callback(null, sections[0].docs_text)
     catch error2
       callback error2.message
 
@@ -86,20 +89,23 @@ parse = (source, code) ->
   language = get_language source
   has_code = docs_text = code_text = ''
 
-  save = (docs, code) ->
-    sections.push docs_text: docs, code_text: code
+  unless language?
+    [docs_text: code, code_text: '']
+  else
+    save = (docs, code) ->
+      sections.push docs_text: docs, code_text: code
 
-  for line in lines
-    if line.match(language.comment_matcher) and not line.match(language.comment_filter)
-      if has_code
-        save docs_text, code_text
-        has_code = docs_text = code_text = ''
-      docs_text += line.replace(language.comment_matcher, '') + '\n'
-    else
-      has_code = yes
-      code_text += line + '\n'
-  save docs_text, code_text
-  sections
+    for line in lines
+      if line.match(language.comment_matcher) and not line.match(language.comment_filter)
+        if has_code
+          save docs_text, code_text
+          has_code = docs_text = code_text = ''
+        docs_text += line.replace(language.comment_matcher, '') + '\n'
+      else
+        has_code = yes
+        code_text += line + '\n'
+    save docs_text, code_text
+    sections
 
 # Highlights a single chunk of CoffeeScript code, using **Pygments** over stdio,
 # and runs the text of its corresponding comment through **Markdown**, using
@@ -199,7 +205,17 @@ for ext, l of languages
   l.divider_html = new RegExp('\\n*<span class="c1?">' + l.symbol + 'DIVIDER<\\/span>\\n*')
 
 # Get the current language we're documenting, based on the extension.
-get_language = (source) -> languages[path.extname(source)]
+get_language = (source) ->
+  switch path.basename source
+    when 'Cakefile'  then languages['.coffee']
+    when 'Rakefile'  then languages['.rb']
+    when 'Phakefile' then languages['.php']
+    else
+      ext = path.extname source
+      if ext is '.json' then languages['.js']
+      else languages[ext]
+
+exports.get_language = get_language
 
 # Compute the destination HTML path for an input source file path. If the source
 # is `lib/example.coffee`, the HTML will be at `docs/example.html`
