@@ -228,7 +228,8 @@ template = (str) ->
 exports.template = template
 
 # Create the template that we will use to generate the Docco HTML page.
-docco_template  = template fs.readFileSync(__dirname + '/../resources/docco.jst').toString()
+ck = require "CoffeeKup"
+docco_template  = ck.compile fs.readFileSync(__dirname + '/../resources/docco.coffee').toString()
 
 # The CSS styles we'd like to apply to the documentation.
 docco_styles    = fs.readFileSync(__dirname + '/../resources/docco.css').toString()

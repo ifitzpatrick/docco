@@ -17,5 +17,8 @@
   "main" :        "./lib/docco",
   "bin": {
     "docco":      "./bin/docco"
+  },
+  "dependencies": {
+    "coffeekup":  ">= 0.3.1"
   }
 }

@@ -1,8 +1,10 @@
-http  = require 'http'
-docco = require './docco'
-fs    = require 'fs'
+http     = require 'http'
+docco    = require './docco'
+fs       = require 'fs'
+ck       = require 'CoffeeKup'
+showdown = require('./../vendor/showdown').Showdown
 
-dir_template = docco.template fs.readFileSync('docco/resources/dir.jst', "utf8")
+dir_template = ck.compile fs.readFileSync('docco/resources/dir.coffee', "utf8")
 
 http.createServer((req, res) ->
   base_url = req.url
@@ -40,8 +42,25 @@ http.createServer((req, res) ->
             if err
               didError()
             else
-              res.writeHead 200
-              res.end dir_template filenames: filenames, url: base_url
+              readmes = (filename for filename in filenames when filename.indexOf('README') is 0)
+              if readmes.length
+                readme_name = readmes[0]
+                readme_url = "#{url}/#{readme_name}".replace '//', '/'
+                fs.readFile readme_url, "utf8", (err, data) ->
+                  if err
+                    didError()
+                  else
+                    if (readme_name.toLowerCase() is "readme.md") or (
+                      readme_name.toLowerCase() is "readme.markdown")
+                      html = showdown.makeHtml data
+                    else
+                      html = data
+                    res.writeHead 200
+                    res.end dir_template filenames: filenames, url: base_url, readme: html
+
+              else
+                res.writeHead 200
+                res.end dir_template filenames: filenames, url: base_url, readme: ''
 
         else if stat.isFile()
           docco.generate_documentation url, (err, html) ->
