@@ -1,3 +1,4 @@
+<pre>
  ____                                                      
 /\  _`\                                                    
 \ \ \/\ \        ___         ___         ___         ___   
@@ -6,6 +7,7 @@
    \ \____/    \ \____/    \ \____\    \ \____\    \ \____/
     \/___/      \/___/      \/____/     \/____/     \/___/ 
 
+</pre>
 
 Docco is a quick-and-dirty, hundred-line-long, literate-programming-style
 documentation generator. For more information, see:
