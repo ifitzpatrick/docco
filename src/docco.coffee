@@ -145,7 +145,7 @@ highlight = (source, sections, callback) ->
 # and write out the documentation. Pass the completed sections into the template
 # found in `resources/docco.jst`
 generate_html = (source, sections) ->
-  sources ?= []
+  sources = []
   title = path.basename source
   #dest  = destination source
   html  = docco_template {
